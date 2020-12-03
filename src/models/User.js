@@ -1,5 +1,4 @@
 import { DataTypes } from 'sequelize';
-import { Token } from './Token';
 
 const User = (sequelize) =>
   sequelize.define(

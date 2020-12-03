@@ -6,18 +6,18 @@ import { logger, NotFoundError } from './utils';
 import cors from 'cors';
 
 // Routers
-import { auth } from './routers';
+import { auth, works, workTypes, services } from './routers';
 
 const app = express();
 
 app.use(
   cors({
-    origin: 'http://test.com',
+    origin: false,
   })
 );
 
 app.use(cookieParser());
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '100kb' }));
 
 // Logger
 if (process.env.NODE_ENV === 'development') {
@@ -35,6 +35,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // Routers
 app.use('/', auth);
+app.use('/work-types', workTypes);
+app.use('/works', works);
+app.use('/services', services);
 
 app.use('*', (req, res, next) => {
   const error = new NotFoundError(

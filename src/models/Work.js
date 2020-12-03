@@ -1,23 +1,24 @@
 import { DataTypes } from 'sequelize';
 
-const Token = (sequelize) =>
+const Work = (sequelize) =>
   sequelize.define(
-    'Token',
+    'Work',
     {
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      refreshToken: DataTypes.STRING,
-      ua: DataTypes.STRING,
-      ip: DataTypes.STRING,
-      expires: DataTypes.DATE,
+      name: { allowNull: false, type: DataTypes.STRING },
+      active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
     },
     {
-      tableName: 'tokens',
+      tableName: 'works',
       timestamps: true,
     }
   );
 
-export default Token;
+export default Work;
