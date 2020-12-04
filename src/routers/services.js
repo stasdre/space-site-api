@@ -8,6 +8,6 @@ import { createService, auth } from '../schemas';
 
 export const router = express.Router();
 
-router.post('/create', validator(createService), Service.create);
+router.post('/create', authorization, validator(createService), Service.create);
 
 export { router as services };

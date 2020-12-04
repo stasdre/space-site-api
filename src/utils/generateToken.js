@@ -12,11 +12,8 @@ export const createToken = (payload, secretKey, expiresIn) =>
 export const createRefreshToken = () => cryptoRandomString({ length: 40 });
 
 export const createTokens = (payload) => {
-  const token = createToken(
-    payload,
-    process.env.SECRET_KEY,
-    Number(process.env.ACCESS_TOKEN_EXPIRES)
-  );
+  const expiresIn = Number(process.env.ACCESS_TOKEN_EXPIRES);
+  const token = createToken(payload, process.env.SECRET_KEY, expiresIn);
   const refreshToken = createRefreshToken();
 
   return [token, refreshToken];

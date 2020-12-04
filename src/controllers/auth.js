@@ -65,7 +65,7 @@ const signin = async (req, res) => {
 
     setTokenCookie(res, refreshToken);
 
-    res.status(200).send({ accessToken, refreshToken });
+    res.status(200).send({ accessToken });
   } catch (error) {
     res.status(500).send({ message: 'Something went wrong!!!' });
   }
@@ -124,7 +124,7 @@ const refresh = async (req, res) => {
 
     setTokenCookie(res, refreshToken);
 
-    res.status(200).send({ accessToken, refreshToken });
+    res.status(201).send({ accessToken });
   } catch (error) {
     res.status(500).send({ message: 'Something went wrong!!!' });
   }

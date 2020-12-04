@@ -11,8 +11,8 @@ const upload = multer({ dest: 'uploads/' });
 
 export const router = express.Router();
 
-router.post('/create', validator(createWork), Works.create);
+router.post('/create', authorization, validator(createWork), Works.create);
 router.get('/all', Works.getAll);
-router.post('/upload', upload.single('file'), Works.upload);
+router.post('/upload', authorization, upload.single('file'), Works.upload);
 
 export { router as works };
