@@ -34,10 +34,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Routers
-app.use('/', auth);
-app.use('/work-types', workTypes);
-app.use('/works', works);
-app.use('/services', services);
+app.use('/api/', auth);
+app.use('/api/work-types', workTypes);
+app.use('/api/works', works);
+app.use('/api/services', services);
 
 app.use('*', (req, res, next) => {
   const error = new NotFoundError(

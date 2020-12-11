@@ -1,0 +1,9 @@
+/node_modules
+/build
+/data
+yarn-error.log
+yarn.lock
+package-lock.json
+Dockerfile
+.gitignore
+README.md
