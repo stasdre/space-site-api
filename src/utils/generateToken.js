@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import cryptoRandomString from 'crypto-random-string';
-//import _ from 'lodash';
 
 export const createToken = (payload, secretKey, expiresIn) =>
   jwt.sign(payload, secretKey, {
