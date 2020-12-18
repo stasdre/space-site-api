@@ -5,6 +5,7 @@ import Token from './Token';
 import WorkTypes from './WorkTypes';
 import Work from './Work';
 import Service from './Service';
+import Lang from './Lang';
 
 import { getDB } from '../utils';
 
@@ -24,6 +25,7 @@ db.token = Token(sequelize);
 db.workTypes = WorkTypes(sequelize);
 db.work = Work(sequelize);
 db.service = Service(sequelize);
+db.lang = Lang(sequelize);
 
 db.users.hasMany(db.token, {
   onDelete: 'CASCADE',

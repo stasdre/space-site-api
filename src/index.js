@@ -15,7 +15,7 @@ app.listen(PORT, async () => {
   dg(`Server API is up on port ${PORT}`);
   try {
     await db.sequelize.authenticate();
-    db.sequelize.sync();
+    db.sequelize.sync({ alter: true });
     dg(`Connection has been established successfully.`);
   } catch (error) {
     dg(`Unable to connect to the database: ${error}`);
