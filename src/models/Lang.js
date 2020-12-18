@@ -26,6 +26,10 @@ const Lang = (sequelize) =>
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
       },
+      order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       tableName: 'langs',
