@@ -4,8 +4,9 @@ import db from '../models';
 const Service = db.service;
 const ServicesData = db.servicesData;
 const ServicePrices = db.servicePrices;
+const Langs = db.lang;
 
-const getAll = async (req, res) => {
+const getByLang = async (req, res) => {
   const { lang } = req.params;
   const data = [];
 
@@ -31,6 +32,7 @@ const getAll = async (req, res) => {
           'from',
           'column',
           'ServiceId',
+          'LangId',
           'createdAt',
           'updatedAt',
         ],
@@ -53,6 +55,106 @@ const getAll = async (req, res) => {
         prices,
       });
     }
+
+    res.status(200).send({ services: data });
+  } catch (error) {
+    res.status(500).send({ message: 'Something went wrong!!!' });
+  }
+};
+
+const getAll = async (req, res) => {
+  let data = {};
+
+  try {
+    const dataLangs = await Langs.findAll({
+      attributes: ['id', 'name'],
+      where: {
+        active: 1,
+      },
+    });
+
+    for (const lang of dataLangs) {
+      const servicesData = await ServicesData.findAll({
+        attributes: ['name', 'ServiceId', 'LangId'],
+        where: {
+          LangId: lang.id,
+        },
+        include: Service,
+      });
+
+      data[lang.id] = [];
+
+      for (const item of servicesData) {
+        const prices = await ServicePrices.findAll({
+          attributes: [
+            'id',
+            'title',
+            'price',
+            'from',
+            'column',
+            'ServiceId',
+            'LangId',
+            'createdAt',
+            'updatedAt',
+          ],
+          where: {
+            ServiceId: item.ServiceId,
+            LangId: item.LangId,
+          },
+          order: [['column', 'ASC']],
+        });
+
+        const dataPrice = {};
+        prices.map((item) => {
+          dataPrice[item.column] = item;
+        });
+
+        data[lang.id].push({
+          id: item.Service.id,
+          active: item.Service.active,
+          name: item.name,
+          createdAt: item.Service.createdAt,
+          updatedAt: item.Service.updatedAt,
+          ...dataPrice,
+          prices,
+        });
+      }
+    }
+
+    // const services = await Service.findAll({
+    //   attributes: ['id', 'active', 'createdAt', 'updatedAt'],
+    // });
+
+    //for (const item of services) {
+    //   const prices = await ServicePrices.findAll({
+    //     attributes: [
+    //       'id',
+    //       'title',
+    //       'price',
+    //       'from',
+    //       'column',
+    //       'ServiceId',
+    //       'LangId',
+    //       'createdAt',
+    //       'updatedAt',
+    //     ],
+    //     where: {
+    //       ServiceId: item.id,
+    //       LangId: lang,
+    //     },
+    //     order: [['column', 'ASC']],
+    //   });
+    //   const dataPrice = {};
+    //   prices.map((item) => {
+    //     dataPrice[item.column] = item;
+    //   });
+    //   data.push({
+    //     ...item.dataValues,
+    //     ...servicesData.dataValues,
+    //     ...dataPrice,
+    //     prices,
+    //   });
+    //}
 
     res.status(200).send({ services: data });
   } catch (error) {
@@ -130,7 +232,7 @@ const create = async (req, res) => {
       delete data[item]['price'];
       delete data[item]['advantage'];
 
-      await ServicesData.create(
+      const serviceData = await ServicesData.create(
         { ServiceId: service.id, LangId: item, ...data[item] },
         { transaction: t }
       );
@@ -140,6 +242,7 @@ const create = async (req, res) => {
           price.map((itemPrice, index) => ({
             ServiceId: service.id,
             LangId: item,
+            ServiceDatumId: serviceData.id,
             ...itemPrice,
             column: `column_${index + 1}`,
           })),
@@ -263,4 +366,4 @@ const deleteService = async (req, res) => {
   }
 };
 
-export { create, getAll, getById, update, deleteService };
+export { create, getByLang, getAll, getById, update, deleteService };

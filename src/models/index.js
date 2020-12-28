@@ -72,4 +72,9 @@ db.lang.hasMany(db.servicePrices, {
 });
 db.servicePrices.belongsTo(db.lang);
 
+db.servicesData.hasMany(db.servicePrices, {
+  onDelete: 'CASCADE',
+});
+db.servicePrices.belongsTo(db.servicesData);
+
 export default db;
