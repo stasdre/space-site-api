@@ -9,7 +9,6 @@ const Service = (sequelize) =>
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      name: { allowNull: false, type: DataTypes.STRING },
       active: {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,

@@ -11,7 +11,9 @@ export const validator = (schema) => (req, res, next) => {
     return next();
   }
 
-  const errors = validate.errors.map(({ message }) => message).join(', ');
+  const errors = validate.errors
+    .map(({ dataPath, message }) => `${dataPath}: ${message}`)
+    .join(', ');
   const body = JSON.stringify(req.body, null, 2);
 
   //   next(
