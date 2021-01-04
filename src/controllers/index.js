@@ -3,3 +3,4 @@ export * as Works from './works';
 export * as WorkTypes from './WorkTypes';
 export * as Service from './services';
 export * as Langs from './langs';
+export * as Prices from './prices';

@@ -6,7 +6,7 @@ import { logger, NotFoundError } from './utils';
 import cors from 'cors';
 
 // Routers
-import { auth, works, workTypes, services, langs } from './routers';
+import { auth, works, workTypes, services, langs, prices } from './routers';
 
 const app = express();
 
@@ -39,6 +39,7 @@ app.use('/api/work-types', workTypes);
 app.use('/api/works', works);
 app.use('/api/services', services);
 app.use('/api/langs', langs);
+app.use('/api/prices', prices);
 
 app.use('*', (req, res, next) => {
   const error = new NotFoundError(
