@@ -41,7 +41,7 @@ const getAll = async (req, res) => {
 
     for (const lang of dataLangs) {
       const worksData = await WorksData.findAll({
-        attributes: ['name', 'WorkId', 'LangId'],
+        attributes: ['name', 'WorkId', 'LangId', 'id'],
         where: {
           LangId: lang.id,
         },
@@ -58,6 +58,7 @@ const getAll = async (req, res) => {
           WorkType: item.Work.WorkType.name,
           createdAt: item.Work.createdAt,
           updatedAt: item.Work.updatedAt,
+          dataId: item.id,
         });
       }
     }

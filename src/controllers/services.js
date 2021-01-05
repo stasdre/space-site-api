@@ -4,6 +4,7 @@ import db from '../models';
 const Service = db.service;
 const ServicesData = db.servicesData;
 const ServicePrices = db.servicePrices;
+const ServicesWorks = db.servicesWorks;
 const Langs = db.lang;
 
 const getByLang = async (req, res) => {
@@ -196,9 +197,27 @@ const getById = async (req, res) => {
           LangId: item.LangId,
         },
       });
+
+      const works = await ServicesWorks.findAll({
+        attributes: {
+          exclude: [
+            'id',
+            'createdAt',
+            'updatedAt',
+            'ServiceId',
+            'LangId',
+            'ServiceDatumId',
+          ],
+        },
+        where: {
+          ServiceId: service.id,
+          LangId: item.LangId,
+        },
+      });
       data[item.LangId] = {
         ...item.dataValues,
         price: [...price.map((item) => item.dataValues)],
+        works: [...works.map((item) => item.WorkId)],
       };
     }
 
@@ -227,10 +246,11 @@ const create = async (req, res) => {
     );
 
     for (const item in data) {
-      const { advantage = [], price = [] } = data[item];
+      const { advantage = [], price = [], works = [] } = data[item];
 
       delete data[item]['price'];
       delete data[item]['advantage'];
+      delete data[item]['works'];
 
       const serviceData = await ServicesData.create(
         { ServiceId: service.id, LangId: item, ...data[item] },
@@ -245,6 +265,17 @@ const create = async (req, res) => {
             ServiceDatumId: serviceData.id,
             ...itemPrice,
             column: `column_${index + 1}`,
+          })),
+          { transaction: t }
+        );
+      }
+
+      if (works.length) {
+        await ServicesWorks.bulkCreate(
+          works.map((itemWork) => ({
+            ServiceId: service.id,
+            LangId: item,
+            WorkId: itemWork,
           })),
           { transaction: t }
         );
@@ -292,10 +323,11 @@ const update = async (req, res) => {
     );
 
     for (const item in data) {
-      const { advantage = [], price = [] } = data[item];
+      const { advantage = [], price = [], works = [] } = data[item];
 
       delete data[item]['price'];
       delete data[item]['advantage'];
+      delete data[item]['works'];
 
       await ServicesData.update(
         { ...data[item] },
@@ -316,6 +348,14 @@ const update = async (req, res) => {
         transaction: t,
       });
 
+      await ServicesWorks.destroy({
+        where: {
+          ServiceId: service.id,
+          LangId: item,
+        },
+        transaction: t,
+      });
+
       if (price.length) {
         await ServicePrices.bulkCreate(
           price.map((itemPrice, index) => ({
@@ -323,6 +363,17 @@ const update = async (req, res) => {
             LangId: item,
             ...itemPrice,
             column: `column_${index + 1}`,
+          })),
+          { transaction: t }
+        );
+      }
+
+      if (works.length) {
+        await ServicesWorks.bulkCreate(
+          works.map((itemWork) => ({
+            ServiceId: service.id,
+            LangId: item,
+            WorkId: itemWork,
           })),
           { transaction: t }
         );
