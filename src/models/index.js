@@ -4,6 +4,7 @@ import User from './User';
 import Token from './Token';
 import WorkTypes from './WorkTypes';
 import Work from './Work';
+import WorksData from './WorksData';
 import Service from './Service';
 import Lang from './Lang';
 import ServicesData from './ServicesData';
@@ -30,6 +31,7 @@ db.users = User(sequelize);
 db.token = Token(sequelize);
 db.workTypes = WorkTypes(sequelize);
 db.work = Work(sequelize);
+db.worksData = WorksData(sequelize);
 db.service = Service(sequelize);
 db.servicesData = ServicesData(sequelize);
 db.lang = Lang(sequelize);
@@ -44,6 +46,16 @@ db.workTypes.hasMany(db.work, {
   onDelete: 'SET NULL',
 });
 db.work.belongsTo(db.workTypes);
+
+db.work.hasMany(db.worksData, {
+  onDelete: 'CASCADE',
+});
+db.worksData.belongsTo(db.work);
+
+db.lang.hasMany(db.worksData, {
+  onDelete: 'CASCADE',
+});
+db.worksData.belongsTo(db.lang);
 
 db.work.belongsToMany(db.service, {
   through: 'ServiceWorks',
