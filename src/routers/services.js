@@ -11,7 +11,9 @@ const upload = multer({ dest: 'uploads/' });
 export const router = express.Router();
 
 router.get('/', Service.getAll);
+router.get('/paths', Service.paths);
 router.get('/:id', Service.getById);
+router.get('/:url/:lang', Service.getByUrl);
 router.get('/lang/:lang', Service.getByLang);
 
 router.post('/create', authorization, validator(createService), Service.create);

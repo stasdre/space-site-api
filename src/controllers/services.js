@@ -5,7 +5,10 @@ const Service = db.service;
 const ServicesData = db.servicesData;
 const ServicePrices = db.servicePrices;
 const ServicesWorks = db.servicesWorks;
+const Works = db.work;
+const WorksData = db.worksData;
 const Langs = db.lang;
+const WorkTypes = db.workTypes;
 
 const getByLang = async (req, res) => {
   const { lang } = req.params;
@@ -121,41 +124,6 @@ const getAll = async (req, res) => {
         });
       }
     }
-
-    // const services = await Service.findAll({
-    //   attributes: ['id', 'active', 'createdAt', 'updatedAt'],
-    // });
-
-    //for (const item of services) {
-    //   const prices = await ServicePrices.findAll({
-    //     attributes: [
-    //       'id',
-    //       'title',
-    //       'price',
-    //       'from',
-    //       'column',
-    //       'ServiceId',
-    //       'LangId',
-    //       'createdAt',
-    //       'updatedAt',
-    //     ],
-    //     where: {
-    //       ServiceId: item.id,
-    //       LangId: lang,
-    //     },
-    //     order: [['column', 'ASC']],
-    //   });
-    //   const dataPrice = {};
-    //   prices.map((item) => {
-    //     dataPrice[item.column] = item;
-    //   });
-    //   data.push({
-    //     ...item.dataValues,
-    //     ...servicesData.dataValues,
-    //     ...dataPrice,
-    //     prices,
-    //   });
-    //}
 
     res.status(200).send({ services: data });
   } catch (error) {
@@ -417,4 +385,99 @@ const deleteService = async (req, res) => {
   }
 };
 
-export { create, getByLang, getAll, getById, update, deleteService };
+const paths = async (req, res) => {
+  try {
+    const servicesData = await ServicesData.findAll({
+      attributes: ['url'],
+      include: [
+        { model: Service, where: { active: 1 }, attributes: ['id'] },
+        { model: Langs, where: { active: 1 }, attributes: ['code'] },
+      ],
+      raw: true,
+    });
+
+    res.status(200).send({ services: servicesData });
+  } catch (error) {
+    res.status(500).send({ message: 'Something went wrong!!!' });
+  }
+};
+
+const getByUrl = async (req, res) => {
+  const { url, lang } = req.params;
+  const data = [];
+  try {
+    const serviceData = await ServicesData.findOne({
+      where: {
+        url,
+      },
+      include: [
+        { model: Service, where: { active: 1 }, attributes: ['id'] },
+        { model: Langs, where: { code: lang }, attributes: [] },
+      ],
+      raw: true,
+    });
+
+    const prices = await ServicePrices.findAll({
+      attributes: ['id', 'title', 'price', 'from', 'column', 'promo'],
+      where: {
+        ServiceId: serviceData.ServiceId,
+        LangId: serviceData.LangId,
+      },
+      order: [['column', 'ASC']],
+    });
+
+    serviceData.prices = prices.map((item) => item.dataValues);
+
+    const works = await ServicesWorks.findAll({
+      attributes: ['WorkId'],
+      where: {
+        ServiceId: serviceData.ServiceId,
+        LangId: serviceData.LangId,
+      },
+      include: [
+        {
+          model: Works,
+          where: { active: 1 },
+          attributes: ['id'],
+        },
+      ],
+      raw: true,
+    });
+
+    const worksData = await WorksData.findAll({
+      attributes: ['name', 'url', 'prev_img'],
+      where: {
+        WorkId: works.map((item) => item.WorkId),
+        LangId: serviceData.LangId,
+      },
+      include: [
+        {
+          model: Works,
+          attributes: ['id'],
+          include: [
+            {
+              model: WorkTypes,
+              attributes: ['name'],
+            },
+          ],
+        },
+      ],
+      raw: true,
+    });
+
+    serviceData.works = worksData.map((work, index) => ({
+      id: work['Work.id'],
+      url: `/${lang}/${work.url}`,
+      title: work.name,
+      //img: work.prev_img,
+      img: `/works/work_${index + 1}.jpg`,
+      type: work['Work.WorkType.name'],
+    }));
+
+    res.status(200).send({ service: serviceData });
+  } catch (error) {
+    res.status(500).send({ message: 'Something went wrong!!!' });
+  }
+};
+
+export { create, getByLang, getAll, getById, update, deleteService, paths, getByUrl };
