@@ -16,7 +16,7 @@ const getByLang = async (req, res) => {
 
   try {
     const services = await Service.findAll({
-      attributes: ['id', 'active', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'active', 'ServiceCategoryId', 'createdAt', 'updatedAt'],
     });
 
     for (const item of services) {
@@ -137,7 +137,7 @@ const getById = async (req, res) => {
 
   try {
     const service = await Service.findOne({
-      attributes: ['id', 'active'],
+      attributes: ['id', 'ServiceCategoryId', 'active'],
       where: {
         id,
       },
@@ -204,10 +204,11 @@ const create = async (req, res) => {
   const t = await db.sequelize.transaction();
 
   try {
-    const { active, ...data } = req.body;
+    const { active, ServiceCategoryId, ...data } = req.body;
 
     const service = await Service.create(
       {
+        ServiceCategoryId,
         active,
       },
       { transaction: t }
@@ -260,7 +261,7 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-  const { active, ...data } = req.body;
+  const { active, ServiceCategoryId, ...data } = req.body;
   const { id } = req.params;
 
   const t = await db.sequelize.transaction();
@@ -281,6 +282,7 @@ const update = async (req, res) => {
     await Service.update(
       {
         active,
+        ServiceCategoryId,
       },
       {
         where: {

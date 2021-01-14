@@ -4,6 +4,9 @@ export const createService = {
     active: {
       type: 'boolean',
     },
+    ServiceCategoryId: {
+      type: 'string',
+    },
   },
   patternProperties: {
     '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}': {

@@ -10,6 +10,8 @@ import Lang from './Lang';
 import ServicesData from './ServicesData';
 import ServicePrices from './ServicesPrices';
 import ServicesWorks from './ServicesWorks';
+import ServiceCategories from './ServiceCategories';
+import ServiceCategoriesData from './ServiceCategoriesData';
 
 import { getDB } from '../utils';
 
@@ -38,6 +40,8 @@ db.servicesData = ServicesData(sequelize);
 db.lang = Lang(sequelize);
 db.servicePrices = ServicePrices(sequelize);
 db.servicesWorks = ServicesWorks(sequelize);
+db.serviceCategories = ServiceCategories(sequelize);
+db.serviceCategoriesData = ServiceCategoriesData(sequelize);
 
 db.users.hasMany(db.token, {
   onDelete: 'CASCADE',
@@ -98,5 +102,20 @@ db.work.hasMany(db.servicesWorks, {
   onDelete: 'CASCADE',
 });
 db.servicesWorks.belongsTo(db.work);
+
+db.serviceCategories.hasMany(db.service, {
+  onDelete: 'CASCADE',
+});
+db.service.belongsTo(db.serviceCategories);
+
+db.serviceCategories.hasMany(db.serviceCategoriesData, {
+  onDelete: 'CASCADE',
+});
+db.serviceCategoriesData.belongsTo(db.serviceCategories);
+
+db.lang.hasMany(db.serviceCategoriesData, {
+  onDelete: 'CASCADE',
+});
+db.serviceCategoriesData.belongsTo(db.lang);
 
 export default db;
