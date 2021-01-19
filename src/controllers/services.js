@@ -476,6 +476,15 @@ const getByUrl = async (req, res) => {
       type: work['Work.WorkType.name'],
     }));
 
+    serviceData.alternateURLs = await ServicesData.findAll({
+      attributes: ['url'],
+      where: {
+        ServiceId: serviceData.ServiceId,
+      },
+      include: [{ model: Langs, attributes: ['code'] }],
+      raw: true,
+    });
+
     res.status(200).send({ service: serviceData });
   } catch (error) {
     res.status(500).send({ message: 'Something went wrong!!!' });
