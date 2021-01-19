@@ -70,7 +70,7 @@ const ServiceData = (sequelize) =>
         defaultValue: '',
       },
       more: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT('long'),
         defaultValue: '',
       },
     },
