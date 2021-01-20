@@ -80,6 +80,7 @@ const getAll = async (req, res) => {
     for (const lang of dataLangs) {
       const servicesData = await ServicesData.findAll({
         attributes: ['name', 'ServiceId', 'LangId'],
+        order: [['name', 'ASC']],
         where: {
           LangId: lang.id,
         },

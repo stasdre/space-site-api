@@ -50,6 +50,7 @@ const getAllWidthServices = async (req, res) => {
       where: {
         ServiceCategoryId: categories.map((item) => item.id),
       },
+      order: [['order', 'ASC']],
       include: [
         {
           model: Langs,
@@ -63,6 +64,7 @@ const getAllWidthServices = async (req, res) => {
     for (const item of data) {
       const dataServices = await ServicesData.findAll({
         attributes: ['name', 'url'],
+        order: [['order', 'ASC']],
         include: [
           {
             model: Service,

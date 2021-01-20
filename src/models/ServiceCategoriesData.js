@@ -13,6 +13,10 @@ const ServiceCategoriesData = (sequelize) =>
         type: DataTypes.STRING,
         defaultValue: '',
       },
+      order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       tableName: 'service_categories_data',

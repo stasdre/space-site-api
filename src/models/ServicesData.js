@@ -73,6 +73,10 @@ const ServiceData = (sequelize) =>
         type: DataTypes.TEXT('long'),
         defaultValue: '',
       },
+      order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       tableName: 'services_data',
