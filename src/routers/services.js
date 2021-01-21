@@ -41,7 +41,7 @@ router.post('/upload', authorization, upload.single('file'), (req, res) => {
   res.status(200).send({
     status: 'done',
     name: req.file.filename,
-    url: `/services/${req.file.filename}`,
+    url: `/images/services/${req.file.filename}`,
   });
 });
 
