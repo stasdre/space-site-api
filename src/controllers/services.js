@@ -9,6 +9,7 @@ const Works = db.work;
 const WorksData = db.worksData;
 const Langs = db.lang;
 const WorkTypes = db.workTypes;
+const ServiceCategoriesData = db.serviceCategoriesData;
 
 const getByLang = async (req, res) => {
   const { lang } = req.params;
@@ -414,11 +415,25 @@ const getByUrl = async (req, res) => {
         url,
       },
       include: [
-        { model: Service, where: { active: 1 }, attributes: ['id'] },
+        {
+          model: Service,
+          where: { active: 1 },
+          attributes: ['id', 'ServiceCategoryId'],
+        },
         { model: Langs, where: { code: lang }, attributes: [] },
       ],
       raw: true,
     });
+
+    const catData = await ServiceCategoriesData.findOne({
+      attributes: ['name'],
+      where: {
+        ServiceCategoryId: serviceData['Service.ServiceCategoryId'],
+      },
+      include: [{ model: Langs, where: { code: lang }, attributes: [] }],
+    });
+
+    serviceData.category = catData.name;
 
     const prices = await ServicePrices.findAll({
       attributes: ['id', 'title', 'price', 'from', 'column', 'promo'],
