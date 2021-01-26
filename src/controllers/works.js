@@ -1,4 +1,5 @@
 import path from 'path';
+import { Op } from 'sequelize';
 import db from '../models';
 
 const Work = db.work;
@@ -110,6 +111,23 @@ const getById = async (req, res) => {
   }
 };
 
+const paths = async (req, res) => {
+  try {
+    const worksData = await WorksData.findAll({
+      attributes: ['url'],
+      include: [
+        { model: Work, where: { active: 1 }, attributes: ['id'] },
+        { model: Langs, where: { active: 1 }, attributes: ['code'] },
+      ],
+      raw: true,
+    });
+
+    res.status(200).send({ works: worksData });
+  } catch (error) {
+    res.status(500).send({ message: 'Something went wrong!!!' });
+  }
+};
+
 const upload = (req, res) => {
   res.sendFile(path.join(__dirname, '../../', req.file.path), {
     headers: {
@@ -200,4 +218,137 @@ const deleteWork = async (req, res) => {
   }
 };
 
-export { create, upload, getAll, deleteWork, getById, update };
+const getByUrl = async (req, res) => {
+  const { url, lang } = req.params;
+
+  try {
+    const workData = await WorksData.findOne({
+      attributes: [
+        'id',
+        'WorkId',
+        'LangId',
+        'meta_title',
+        'meta_desc',
+        'h1',
+        'name',
+        'description',
+        'url',
+        'img',
+        'order',
+      ],
+      where: {
+        url,
+      },
+      include: [
+        {
+          model: Work,
+          where: { active: 1 },
+          attributes: ['id'],
+        },
+        { model: Langs, where: { code: lang }, attributes: [] },
+      ],
+      raw: true,
+    });
+
+    workData.alternateURLs = await WorksData.findAll({
+      attributes: ['url'],
+      where: {
+        WorkId: workData.WorkId,
+      },
+      include: [{ model: Langs, attributes: ['code'] }],
+      raw: true,
+    });
+
+    workData.nextWork = await WorksData.findOne({
+      attributes: ['id', 'url', 'name'],
+      where: { order: { [Op.gt]: workData.order }, LangId: workData.LangId },
+      order: [
+        ['order', 'ASC'],
+        ['id', 'ASC'],
+      ],
+      raw: true,
+    });
+
+    if (!workData.nextWork) {
+      workData.nextWork = await WorksData.findOne({
+        attributes: ['id', 'url', 'name'],
+        where: { LangId: workData.LangId },
+        order: [
+          ['order', 'ASC'],
+          ['id', 'ASC'],
+        ],
+        raw: true,
+      });
+    }
+
+    workData.prevWork = await WorksData.findOne({
+      attributes: ['id', 'url', 'name'],
+      where: { order: { [Op.lt]: workData.order }, LangId: workData.LangId },
+      order: [
+        ['order', 'DESC'],
+        ['id', 'ASC'],
+      ],
+      raw: true,
+    });
+
+    if (!workData.prevWork) {
+      workData.prevWork = await WorksData.findOne({
+        attributes: ['id', 'url', 'name'],
+        where: { LangId: workData.LangId },
+        order: [
+          ['order', 'DESC'],
+          ['id', 'ASC'],
+        ],
+        raw: true,
+      });
+    }
+
+    res.status(200).send({ work: workData });
+  } catch (error) {
+    res.status(500).send({ message: 'Something went wrong!!!' });
+  }
+};
+
+const getByLang = async (req, res) => {
+  const { lang, page = 1 } = req.params;
+  const limit = 8;
+  try {
+    const workData = await WorksData.findAll({
+      attributes: ['name', 'url', 'prev_img', 'img'],
+      include: [
+        {
+          model: Work,
+          where: { active: 1 },
+          attributes: ['id', 'WorkTypeId'],
+          include: [{ model: WorkTypes, attributes: ['name'] }],
+        },
+        { model: Langs, where: { code: lang }, attributes: [] },
+      ],
+      offset: page <= 1 ? 0 : (page - 1) * limit,
+      limit,
+      order: [['order', 'DESC']],
+      raw: true,
+    });
+
+    if (!workData.length) {
+      res.status(404).send({ message: 'Works not found' });
+      return;
+    }
+
+    res.status(200).send({ data: workData });
+  } catch (error) {
+    res.status(500).send({ message: 'Something went wrong!!!' });
+  }
+};
+
+export {
+  create,
+  upload,
+  getAll,
+  deleteWork,
+  getById,
+  update,
+  paths,
+  getByUrl,
+  getByLang,
+};

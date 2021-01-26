@@ -12,7 +12,10 @@ const upload = multer({ dest: 'uploads/' });
 export const router = express.Router();
 
 router.get('/', Works.getAll);
+router.get('/paths', Works.paths);
+router.get('/lang/:lang/:page?', Works.getByLang);
 router.get('/:id', Works.getById);
+router.get('/:url/:lang', Works.getByUrl);
 
 router.post('/create', authorization, validator(createWork), Works.create);
 router.post('/upload', authorization, upload.single('file'), Works.upload);

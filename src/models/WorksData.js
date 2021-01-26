@@ -41,6 +41,10 @@ const WorksData = (sequelize) =>
         type: DataTypes.STRING,
         defaultValue: '',
       },
+      order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       tableName: 'works_data',
