@@ -6,7 +6,8 @@
     "dev": "nodemon",
     "start": "NODE_ENV='production' node -r @babel/register -r dotenv/config ./src/index.js",
     "build": "NODE_ENV=production node -r @babel/register -r dotenv/config './node_modules/.bin/webpack' --config=./webpack/webpack.config.js",
-    "parser": "node -r @babel/register -r dotenv/config ./src/parser.js"
+    "parser": "node -r @babel/register -r dotenv/config ./src/parser.js",
+    "parser-works": "node -r @babel/register -r dotenv/config ./src/parser_works.js"
   },
   "engines": {
     "node": ">=12.19.*"
@@ -44,6 +45,7 @@
     "mariadb": "^2.5.2",
     "multer": "^1.4.2",
     "sequelize": "^6.3.5",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "xml2js": "^0.4.23"
   }
 }
