@@ -462,8 +462,8 @@ const getByUrl = async (req, res) => {
       raw: true,
     });
 
-    const worksData = await WorksData.findAll({
-      attributes: ['name', 'url', 'prev_img'],
+    serviceData.works = await WorksData.findAll({
+      attributes: ['name', 'url', 'prev_img', 'img'],
       where: {
         WorkId: works.map((item) => item.WorkId),
         LangId: serviceData.LangId,
@@ -482,15 +482,6 @@ const getByUrl = async (req, res) => {
       ],
       raw: true,
     });
-
-    serviceData.works = worksData.map((work, index) => ({
-      id: work['Work.id'],
-      url: `/${lang}/${work.url}`,
-      title: work.name,
-      //img: work.prev_img,
-      img: `/works/work_${index + 1}.jpg`,
-      type: work['Work.WorkType.name'],
-    }));
 
     serviceData.alternateURLs = await ServicesData.findAll({
       attributes: ['url'],
